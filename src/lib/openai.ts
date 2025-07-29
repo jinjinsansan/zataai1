@@ -56,7 +56,7 @@ const functions = [
       required: ["horseId"]
     }
   }
-] as const
+]
 
 export async function executeFunction(name: string, args: any) {
   const DATA_BACKEND_URL = process.env.DATA_BACKEND_URL || 'http://localhost:8000'

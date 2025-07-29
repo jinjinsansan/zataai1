@@ -91,7 +91,8 @@ export async function executeFunction(name: string, args: any) {
     }
   } catch (error) {
     console.error(`Function ${name} error:`, error)
-    return { error: `データの取得に失敗しました: ${error.message}` }
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    return { error: `データの取得に失敗しました: ${errorMessage}` }
   }
 }
 
@@ -181,6 +182,7 @@ export async function processChatMessage(userId: string, message: string) {
 
   } catch (error) {
     console.error('Chat processing error:', error)
-    return '申し訳ございません。システムエラーが発生しました。しばらくしてから再度お試しください。'
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    return `申し訳ございません。システムエラーが発生しました。しばらくしてから再度お試しください。`
   }
 }

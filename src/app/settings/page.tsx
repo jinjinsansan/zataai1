@@ -9,6 +9,7 @@ interface SubscriptionInfo {
   trialEnd?: string
   currentPeriodEnd?: string
   stripeCustomerId?: string
+  paypalOrderId?: string
 }
 
 export default function SettingsPage() {
@@ -35,7 +36,7 @@ export default function SettingsPage() {
     }
   }
 
-  const handleUpgrade = async () => {
+  const handleStripeUpgrade = async () => {
     try {
       const response = await fetch('/api/stripe/create-checkout', {
         method: 'POST'
@@ -47,8 +48,25 @@ export default function SettingsPage() {
         window.location.href = data.url
       }
     } catch (error) {
-      console.error('Checkout error:', error)
+      console.error('Stripe checkout error:', error)
       alert('決済画面の表示でエラーが発生しました')
+    }
+  }
+
+  const handlePayPalUpgrade = async () => {
+    try {
+      const response = await fetch('/api/paypal/create-order', {
+        method: 'POST'
+      })
+      
+      const data = await response.json()
+      
+      if (data.approvalUrl) {
+        window.location.href = data.approvalUrl
+      }
+    } catch (error) {
+      console.error('PayPal checkout error:', error)
+      alert('PayPal決済画面の表示でエラーが発生しました')
     }
   }
 
@@ -125,12 +143,28 @@ export default function SettingsPage() {
                 )}
                 
                 {(subscription.status === 'trial' || subscription.status === 'canceled') && (
-                  <button
-                    onClick={handleUpgrade}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-                  >
-                    有料プランにアップグレード (月額980円)
-                  </button>
+                  <div className="space-y-3">
+                    <div>
+                      <h3 className="text-md font-medium text-gray-700 mb-2">決済方法を選択してください:</h3>
+                      <div className="flex space-x-4">
+                        <button
+                          onClick={handleStripeUpgrade}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                        >
+                          💳 クレジットカード (Stripe)
+                        </button>
+                        <button
+                          onClick={handlePayPalUpgrade}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                        >
+                          🏦 PayPal
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      月額980円で競馬予想AIを利用できます
+                    </p>
+                  </div>
                 )}
               </div>
             )}

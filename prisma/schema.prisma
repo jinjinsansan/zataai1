@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,61 +11,65 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  email       String   @unique
-  password    String
-  name        String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  name         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
   subscription Subscription?
   payments     Payment[]
   chatLogs     ChatLog[]
-  
-  @@map("users")
 }
 
 model Subscription {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  status    String   // active, inactive, trial, canceled
-  trialEnd  DateTime?
-  currentPeriodEnd DateTime?
-  stripeCustomerId String?
-  stripeSubscriptionId String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  status                String    @default("trial") // trial, active, inactive, canceled
+  trialEnd              DateTime?
+  currentPeriodEnd      DateTime?
   
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Stripe関連
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
   
-  @@map("subscriptions")
+  // PayPal関連
+  paypalOrderId         String?
+  paypalSubscriptionId  String?
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
-  id        String   @id @default(uuid())
-  userId    String
-  amount    Int      // 金額（円単位）
-  currency  String   @default("jpy")
-  status    String   // succeeded, failed, pending
+  id                    String   @id @default(cuid())
+  userId                String
+  amount                Float
+  currency              String   @default("JPY")
+  status                String   @default("pending") // pending, succeeded, failed
+  description           String?
+  
+  // Stripe関連
   stripePaymentIntentId String?
-  description String?
-  createdAt DateTime @default(now())
   
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // PayPal関連
+  paypalPaymentId       String?
   
-  @@map("payments")
+  createdAt             DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ChatLog {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   userId    String
   question  String
-  answer    String   @db.Text
-  raceId    String?
-  metadata  Json?    // 追加情報（Function Call結果等）
+  answer    String
+  metadata  Json?
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@map("chat_logs")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -1,9 +1,9 @@
 import OpenAI from 'openai'
 import { prisma } from './prisma'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-})
+const openai = process.env.OPENAI_API_KEY 
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null
 
 const functions = [
   {
@@ -98,6 +98,10 @@ export async function executeFunction(name: string, args: any) {
 
 export async function processChatMessage(userId: string, message: string) {
   try {
+    if (!openai) {
+      return '申し訳ございません。OpenAI APIキーが設定されていません。'
+    }
+
     // 1. OpenAI APIに質問送信（Function Calling有効）
     const response = await openai.chat.completions.create({
       model: "gpt-4",

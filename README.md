@@ -59,6 +59,56 @@ npm run dev
 
 アプリケーションは http://localhost:3000 で起動します。
 
+## デプロイ
+
+### Netlify (推奨)
+
+1. **GitHubリポジトリをNetlifyに接続**
+   - Netlifyダッシュボードで「New site from Git」を選択
+   - GitHubリポジトリ `jinjinsansan/zataai1` を選択
+
+2. **ビルド設定**
+   - Build command: `npm run build`
+   - Publish directory: `.next`
+
+3. **環境変数の設定**
+   Netlifyダッシュボードで以下の環境変数を設定：
+   ```
+   DATABASE_URL=your-postgresql-url
+   NEXTAUTH_SECRET=your-secret-key
+   NEXTAUTH_URL=https://your-app-name.netlify.app
+   STRIPE_PUBLIC_KEY=your-stripe-public-key
+   STRIPE_SECRET_KEY=your-stripe-secret-key
+   STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
+   STRIPE_PRICE_ID=your-stripe-price-id
+   OPENAI_API_KEY=your-openai-api-key
+   DATA_BACKEND_URL=https://your-backend-url.com
+   ```
+
+4. **デプロイ**
+   - 設定完了後、「Deploy site」をクリック
+   - 自動的にビルドとデプロイが実行されます
+
+### Vercel
+
+```bash
+npm run build
+```
+
+### 環境変数
+
+本番環境では以下の環境変数を設定してください：
+
+- `DATABASE_URL`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL`
+- `STRIPE_PUBLIC_KEY`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_PRICE_ID`
+- `OPENAI_API_KEY`
+- `DATA_BACKEND_URL`
+
 ## システム連携
 
 ### データ処理バックエンド (http://localhost:8000)
@@ -89,28 +139,6 @@ OpenAI Function Callingを通じて以下のAPIを呼び出します：
 - `/api/subscription/info` - サブスクリプション情報取得
 - `/api/stripe/create-checkout` - Stripe決済セッション作成
 - `/api/stripe/webhook` - Stripe Webhook処理
-
-## デプロイ
-
-### Vercel (推奨)
-
-```bash
-npm run build
-```
-
-### 環境変数
-
-本番環境では以下の環境変数を設定してください：
-
-- `DATABASE_URL`
-- `NEXTAUTH_SECRET`
-- `NEXTAUTH_URL`
-- `STRIPE_PUBLIC_KEY`
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
-- `STRIPE_PRICE_ID`
-- `OPENAI_API_KEY`
-- `DATA_BACKEND_URL`
 
 ## ライセンス
 
